@@ -1,0 +1,136 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .header {
+    display: flex;
+    width: 100%;
+    background-color: #070a11;
+    color: white;
+  }
+  .header nav ul {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .header nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 10vh;
+    width: 100%;
+  }
+  .header ul {
+    list-style: none;
+  }
+  .header ul li a {
+    text-decoration: none;
+    color: white;
+  }
+  .description {
+    margin-bottom: 20px;
+    height: 20vh;
+    display: flex;
+    padding: 40px 30px;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #151f36;
+    color: white;
+  }
+  .description .content {
+    width: 60%;
+    padding: 0px 130px;
+  }
+  .description .right {
+    width: 40%;
+  }
+  .description span p {
+    font-size: 15px;
+  }
+  .description span .imp-p {
+    color: yellow;
+  }
+  .description span h2 {
+    font-size: 22px;
+  }
+  
+  .container {
+    padding: 20px;
+  }
+  
+  .file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #fff;
+  }
+  
+  input[type="file"] {
+    border: 2px solid #007bff;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 30%;
+  }
+  
+  select {
+    padding: 10px;
+    min-width: 100px;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  button {
+    width: 15%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  .remove-button {
+    background-color: transparent;
+    border: none;
+    color: red;
+    cursor: pointer;
+    font-size: 18px;
+  }
+  
+  .download-button {
+    margin-left: 10px;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+  }
+  
+  .download-button:disabled {
+    background-color: #ccc;
+  }
+  
+  #downloadLink {
+    margin-top: 10px;
+    color: #007bff;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  
+  #downloadLink:hover {
+    text-decoration: underline;
+  }
+  

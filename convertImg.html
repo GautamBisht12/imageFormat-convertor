@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Converter</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="header">
+      <nav>
+        <div>
+          <img
+            src="logo-removebg-preview.png"
+            alt="quickConvertor-Logo"
+            width="150px"
+          />
+        </div>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="/about.html">About</a></li>
+          <li><a href="https://github.com/">Github</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="description">
+      <span class="content">
+        <h2>Free Image Converter</h2>
+        <p>
+          Easily convert images between popular formats using Quick Converter!
+          Whether you need to switch from PNG to JPEG, WebP to PNG, or other
+          combinations, our tool is designed to make image conversion fast and
+          simple.
+        </p>
+        <p class="imp-p">
+          Stay tuned for more format options and features in future updates!
+        </p>
+      </span>
+      <span style="font-size: 30px" class="right"> 😁 </span>
+    </div>
+    <div class="container">
+      <div id="fileList"></div>
+      <form id="uploadForm" enctype="multipart/form-data">
+        <input
+          type="file"
+          id="fileInput"
+          name="file"
+          accept=".jpeg, .png, .webp, .pdf"
+        />
+      </form>
+    </div>
+
+    <script>
+      const fileListElement = document.getElementById("fileList");
+      const selectedFiles = [];
+
+      // When a file is selected, add it to the list
+      document.getElementById("fileInput").onchange = (e) => {
+        e.preventDefault();
+
+        const fileInput = document.getElementById("fileInput");
+        if (!fileInput.files[0]) {
+          alert("Please select a file.");
+          return;
+        }
+
+        const fileName = fileInput.files[0].name;
+        const selectedFile = fileInput.files[0];
+
+        selectedFiles.push(selectedFile);
+        const fileIndex = selectedFiles.length - 1;
+
+        // Determine if the file is a PDF or an image
+        const isPDF = selectedFile.type === "application/pdf";
+
+        let fileItem;
+        if (isPDF) {
+          // For PDF, automatically select JPEG format and show "Convert" button
+          fileItem = document.createElement("div");
+          fileItem.className = "file-item";
+          fileItem.innerHTML = `
+            <p>${fileName}</p>
+            <p>PDF selected, automatically converting to JPEG format.</p>
+            <button onclick="convertFile(selectedFiles[${fileIndex}], 'jpeg', this, true)">
+              Convert to Image (JPEG)
+            </button>
+            <a class="download-button" href="#" download style="pointer-events: none;">Download</a>
+            <span class="remove-button" onclick="removeFile(this, ${fileIndex})">✖</span>
+          `;
+        } else {
+          // For non-PDF files, allow format selection
+          const formatOptions = `
+            <option value="" disabled selected>Convert to...</option>
+            <option value="jpeg">JPEG</option>
+            <option value="png">PNG</option>
+            <option value="webp">WebP</option>
+          `;
+          fileItem = document.createElement("div");
+          fileItem.className = "file-item";
+          fileItem.innerHTML = `
+            <p>${fileName}</p>
+            <select onchange="updateFileFormat(this, ${fileIndex}, false)">
+              ${formatOptions}
+            </select>
+            <a class="download-button" href="#" download style="pointer-events: none;">Download</a>
+            <span class="remove-button" onclick="removeFile(this, ${fileIndex})">✖</span>
+          `;
+        }
+
+        fileListElement.appendChild(fileItem);
+        fileInput.value = "";
+      };
+
+      function updateFileFormat(selectElement, fileIndex) {
+        const selectedFormat = selectElement.value;
+
+        if (selectedFormat) {
+          const placeholderOption = selectElement.options[0];
+          placeholderOption.textContent = `Convert to ${selectedFormat.toUpperCase()}`;
+          placeholderOption.selected = true;
+
+          const selectedFile = selectedFiles[fileIndex];
+
+          // Trigger file conversion
+          convertFile(
+            selectedFile,
+            selectedFormat,
+            selectElement.parentElement.querySelector(".download-button"),
+            false
+          );
+        }
+
+        console.log(`Updated format for file at index ${fileIndex} to ${selectedFormat}`);
+      }
+
+      async function convertFile(file, format, downloadButton, isPDF) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("format", format);
+        formData.append("isPDF", isPDF); // Add isPDF flag
+
+        // Add loading indicator
+        downloadButton.textContent = "Converting...";
+        downloadButton.style.pointerEvents = "none";
+
+        try {
+          const response = await fetch("http://localhost:3000/convert", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (response.ok) {
+            const result = await response.blob();
+            const objectUrl = URL.createObjectURL(result);
+
+            // Enable the download button
+            downloadButton.href = objectUrl;
+            downloadButton.download = "converted-file." + format;
+            downloadButton.style.pointerEvents = "auto";
+            downloadButton.textContent = "Download";
+          } else {
+            downloadButton.textContent = "Error, try again";
+            console.error("Error in conversion request:", response.status);
+            alert("There was an error with the conversion. Please try again.");
+          }
+        } catch (error) {
+          downloadButton.textContent = "Conversion failed";
+          console.error("Fetch error:", error);
+          alert("A network error occurred during conversion.");
+        }
+      }
+
+      function removeFile(button, fileIndex) {
+        selectedFiles.splice(fileIndex, 1);
+        button.parentElement.remove();
+      }
+    </script>
+  </body>
+</html>
