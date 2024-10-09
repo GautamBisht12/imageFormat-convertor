@@ -26,15 +26,10 @@ app.post('/convert', upload.single('file'), async (req, res) => {
         }
 
         if (isPDF) {
-            const tempPdfPath = path.join(__dirname, 'temp.pdf');
+            const tempPdfPath = path.join('/tmp', 'temp.pdf');
             fs.writeFileSync(tempPdfPath, fileBuffer);
-            console.log('Temporary PDF created at:', tempPdfPath);
 
-            const outputDir = path.join(__dirname, 'output');
-            if (!fs.existsSync(outputDir)) {
-                fs.mkdirSync(outputDir);
-                console.log('Output directory created:', outputDir);
-            }
+            const outputDir = '/tmp';
 
             const options = {
                 format: format === 'jpeg' ? 'jpeg' : format,  // ensure correct format
@@ -43,13 +38,10 @@ app.post('/convert', upload.single('file'), async (req, res) => {
                 page: 1
             };
 
-            console.log("Starting PDF conversion...");
             await pdfPoppler.convert(tempPdfPath, options);
-            console.log("PDF conversion completed.");
 
             const outputImagePath = path.join(outputDir, `converted-file-1.${format}`);
-            console.log('Checking for converted file at:', outputImagePath);
-
+            
             if (fs.existsSync(outputImagePath)) {
                 const outputImage = fs.readFileSync(outputImagePath);
                 res.set('Content-Disposition', `attachment; filename="converted-file.${format}"`);
@@ -59,11 +51,8 @@ app.post('/convert', upload.single('file'), async (req, res) => {
                 throw new Error(`Converted file not found at ${outputImagePath}`);
             }
 
-            // Clean up temporary files
             fs.unlinkSync(tempPdfPath);
-            console.log('Temporary PDF deleted.');
             fs.unlinkSync(outputImagePath);
-            console.log('Converted image deleted.');
         } else {
             const convertedImage = await sharp(fileBuffer)
                 .toFormat(format)
@@ -79,8 +68,5 @@ app.post('/convert', upload.single('file'), async (req, res) => {
     }
 });
 
-
-
-
-
-app.listen(3000, () => console.log('Server running on port 3000'));
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Server running on port ${port}`));
